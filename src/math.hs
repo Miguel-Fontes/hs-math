@@ -1,20 +1,24 @@
-fatorial :: Int -> Int
-fatorial 1 = 1
-fatorial x = x * fatorial (x-1);
-
+-- Combinações e Permutações ------------------------------------------------------------------------------------------
 combinacoes :: (Ord a, Fractional a) => (a, a) -> a
-combinacoes (n, r) = factorial n / (factorial r * factorial(n - r))
+combinacoes (n, r) = fatorial n / (fatorial r * fatorial(n - r))
 
 permutacoes :: (Ord a, Fractional a) => (a, a) -> a
-permutacoes (n, r) = (factorial n) / (factorial (n-r))
+permutacoes (n, r) = (fatorial n) / (fatorial (n-r))
 
-
-factorial :: (Num a, Ord a) => a -> a
-factorial x = factIter 1 1 x
+-- Fatorial -----------------------------------------------------------------------------------------------------------
+-- Processo iterativo linear
+fatorial :: (Num a, Ord a) => a -> a
+fatorial x = factIter 1 1 x
     where factIter a b n
               | n > 0 = factIter (a * b) (b+1) (n-1)
               | otherwise = a
 
+-- Processo recursivo linear
+fatorial' :: (Num a, Ord a) => a -> a
+fatorial' 1 = 1
+fatorial' x = x * fatorial (x-1);
+
+-- Números de Fibonacci -----------------------------------------------------------------------------------------------
 fibonacci :: Int -> [Int]
 fibonacci 1 = [1]
 fibonacci 2 = [1,1]
@@ -23,26 +27,26 @@ fibonacci x = fibIter 1 1 [1,1]
               | a + b < x = fibIter b (a+b) (a+b : fs)
               | otherwise = reverse (fs)
 
+
+-- Triângulo de Pascal ------------------------------------------------------------------------------------------------
 pascalTriangle :: Int -> [[Int]]
 pascalTriangle 0 = [[]]
-pascalTriangle 1 = [[1]]
-pascalTriangle 2 = [[1,1],[1]]
-pascalTriangle r = step (r-2) [[1,1],[1]]
-    where step 0 xs = reverse xs
-          step r xs = step (r-1) ( ([1] ++ (pascalRow (head xs)) ++ [1]) : xs)
+pascalTriangle r = step r 1 [[1]]
+    where step r n xs
+              | n == r = reverse xs
+              | r >= n = step r (n+1) (([1] ++ (computeRow $ head xs) ++ [1]) : xs)
+          computeRow xs
+              | xs == [] = []
+              | length xs > 1 = sum (take 2 xs) : computeRow (drop 1 xs)
+              | otherwise = []
 
-pascalRow [] = []
-pascalRow xs
-    | length xs > 1 = sum (take 2 xs) : pascalRow (drop 1 xs)
-    | otherwise = []
-
--- Pretty Printing para Pascal Triangles. Cool.
+-- Pretty Printing para o Triangulo de Pascal. Cool.
 printPascal :: Int -> IO()
 printPascal r = do
-    pascals <- return $ map show (pascalTriangle r)
-    let rowSize = (length . last) pascals -- Uma hora vai quebrar a linha no console e estragar a brincadeira
-        parsed = foldr (\x acc -> addMargin ((rowSize - length x) `div` 2) x : acc) [] pascals
-    putStrLn $ (unlines) parsed
+    rows <- return $ map show (pascalTriangle r)
+    let rowSize = (length . last) rows -- Uso o tamanho da última row como base para formatar
+        parsedRows = foldr (\row acc -> addMargin ((rowSize - length row) `div` 2) row : acc) [] rows
+    putStrLn $ (unlines) parsedRows
 
 -- Identa uma margem à uma String qualquer com espaços
 addMargin :: Int -> String -> String
