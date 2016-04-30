@@ -52,3 +52,15 @@ printPascal r = do
 addMargin :: Int -> String -> String
 addMargin x xs = (concat $ replicate x " ") ++ xs
 
+-- Nümeros Primos -----------------------------------------------------------------------------------------------------
+isPrime :: Integral a => a -> Bool
+isPrime 1 = False
+isPrime x = primesIter x (x-1) 1
+      where primesIter x d n
+                | n > 2 = False
+                | d == 0 = True
+                | d > 0 = if x `mod` d == 0 then primesIter x (d-1) (n+1) else primesIter x (d-1) n
+
+primosAte :: Integral a => a -> [a]
+primosAte x = foldr step [] [2..x]
+    where step x acc = if isPrime x then x : acc else acc
