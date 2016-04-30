@@ -62,5 +62,4 @@ isPrime x = primesIter x (x-1) 1
                 | d > 0 = if x `mod` d == 0 then primesIter x (d-1) (n+1) else primesIter x (d-1) n
 
 primosAte :: Integral a => a -> [a]
-primosAte x = foldr step [] [2..x]
-    where step x acc = if isPrime x then x : acc else acc
+primosAte x = filter isPrime [1..x]
